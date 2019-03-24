@@ -23,6 +23,7 @@
   <string name="host_ok">Host</string>
   <string name="initial_room_code">0000</string>
   <string name="resolve_button_text">Resolve</string>
+  <string name="plane_finding">Please find a suitable surface&#8230;</string>
 
   <!-- Strings in the Resolve Dialog Box -->
   <string name="resolve_dialog_ok">Resolve</string>

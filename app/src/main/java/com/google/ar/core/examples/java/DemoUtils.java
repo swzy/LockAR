@@ -1,4 +1,4 @@
-/*
+package com.google.ar.core.examples.java;/*
  * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import com.google.ar.core.examples.java.PinCodeActivity.PinCodeActivity;
 
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Config;
