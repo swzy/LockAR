@@ -293,16 +293,13 @@ public class PinCodeActivity extends AppCompatActivity {
                 }
             }
         }
-
         return false;
     }
 
     //create PinPad
     private Node createPinPad() {
-        //base
         Node base = new Node();
 
-        //sun
         Node buttons = new Node();
         buttons.setParent(base);
         buttons.setLocalPosition(new Vector3(0.0f, 0.5f, 0.0f));
@@ -311,11 +308,6 @@ public class PinCodeActivity extends AppCompatActivity {
         pinPadPlacer.setParent(buttons);
         pinPadPlacer.setRenderable(pinPadRenderable);
         pinPadPlacer.setLocalPosition(new Vector3(0.0f, 0.25f, 0.0f));
-
-
-//        // Toggle the controls on and off by tapping the andy.
-//        andyPlacer.setOnTapListener(
-//                (hitTestResult, motionEvent) -> pinPadPlacer.setEnabled(!pinPadPlacer.isEnabled()));
 
         return base;
     }
