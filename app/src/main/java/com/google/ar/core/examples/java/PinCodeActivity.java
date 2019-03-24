@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.ar.core.examples.java.PinCodeActivity;
+
+package com.google.ar.core.examples.java;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +25,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.SeekBar;
 import android.widget.Toast;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -43,6 +43,10 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
+
+
+
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -59,28 +63,14 @@ public class PinCodeActivity extends AppCompatActivity {
 
     private ArSceneView arSceneView;
 
-    private ModelRenderable sunRenderable;
-    private ModelRenderable mercuryRenderable;
-    private ModelRenderable venusRenderable;
-    private ModelRenderable earthRenderable;
-    private ModelRenderable lunaRenderable;
-    private ModelRenderable marsRenderable;
-    private ModelRenderable jupiterRenderable;
-    private ModelRenderable saturnRenderable;
-    private ModelRenderable uranusRenderable;
-    private ModelRenderable neptuneRenderable;
-    private ViewRenderable solarControlsRenderable;
+    private ViewRenderable pinPadRenderable;
 
-    private final SolarSettings solarSettings = new SolarSettings();
 
     // True once scene is loaded
     private boolean hasFinishedLoading = false;
 
     // True once the scene has been placed.
-    private boolean hasPlacedSolarSystem = false;
-
-    // Astronomical units to meters ratio. Used for positioning the planets of the solar system.
-    private static final float AU_TO_METERS = 0.5f;
+    private boolean hasPlacedPinPad = false;
 
     @Override
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -93,47 +83,15 @@ public class PinCodeActivity extends AppCompatActivity {
             return;
         }
 
-        setContentView(R.layout.activity_solar);
+        setContentView(R.layout.activity_pin);
         arSceneView = findViewById(R.id.ar_scene_view);
 
-        // Build all the planet models.
-        CompletableFuture<ModelRenderable> sunStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Sol.sfb")).build();
-        CompletableFuture<ModelRenderable> mercuryStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Mercury.sfb")).build();
-        CompletableFuture<ModelRenderable> venusStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Venus.sfb")).build();
-        CompletableFuture<ModelRenderable> earthStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Earth.sfb")).build();
-        CompletableFuture<ModelRenderable> lunaStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Luna.sfb")).build();
-        CompletableFuture<ModelRenderable> marsStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Mars.sfb")).build();
-        CompletableFuture<ModelRenderable> jupiterStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Jupiter.sfb")).build();
-        CompletableFuture<ModelRenderable> saturnStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Saturn.sfb")).build();
-        CompletableFuture<ModelRenderable> uranusStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Uranus.sfb")).build();
-        CompletableFuture<ModelRenderable> neptuneStage =
-                ModelRenderable.builder().setSource(this, Uri.parse("Neptune.sfb")).build();
-
-        // Build a renderable from a 2D View.
-        CompletableFuture<ViewRenderable> solarControlsStage =
-                ViewRenderable.builder().setView(this, R.layout.solar_controls).build();
+        // Build a pinpad renderable from a 2D View.
+        CompletableFuture<ViewRenderable> placePinPad =
+                ViewRenderable.builder().setView(this, R.layout.pinpad).build();
 
         CompletableFuture.allOf(
-                sunStage,
-                mercuryStage,
-                venusStage,
-                earthStage,
-                lunaStage,
-                marsStage,
-                jupiterStage,
-                saturnStage,
-                uranusStage,
-                neptuneStage,
-                solarControlsStage)
+                placePinPad)
                 .handle(
                         (notUsed, throwable) -> {
                             // When you build a Renderable, Sceneform loads its resources in the background while
@@ -146,17 +104,7 @@ public class PinCodeActivity extends AppCompatActivity {
                             }
 
                             try {
-                                sunRenderable = sunStage.get();
-                                mercuryRenderable = mercuryStage.get();
-                                venusRenderable = venusStage.get();
-                                earthRenderable = earthStage.get();
-                                lunaRenderable = lunaStage.get();
-                                marsRenderable = marsStage.get();
-                                jupiterRenderable = jupiterStage.get();
-                                saturnRenderable = saturnStage.get();
-                                uranusRenderable = uranusStage.get();
-                                neptuneRenderable = neptuneStage.get();
-                                solarControlsRenderable = solarControlsStage.get();
+                                pinPadRenderable = placePinPad.get();
 
                                 // Everything finished loading successfully.
                                 hasFinishedLoading = true;
@@ -192,7 +140,7 @@ public class PinCodeActivity extends AppCompatActivity {
                         (HitTestResult hitTestResult, MotionEvent event) -> {
                             // If the solar system hasn't been placed yet, detect a tap and then check to see if
                             // the tap occurred on an ARCore plane to place the solar system.
-                            if (!hasPlacedSolarSystem) {
+                            if (!hasPlacedPinPad) {
                                 return gestureDetector.onTouchEvent(event);
                             }
 
@@ -324,13 +272,13 @@ public class PinCodeActivity extends AppCompatActivity {
 
         Frame frame = arSceneView.getArFrame();
         if (frame != null) {
-            if (!hasPlacedSolarSystem && tryPlaceSolarSystem(tap, frame)) {
-                hasPlacedSolarSystem = true;
+            if (!hasPlacedPinPad && tryPlacePinPad(tap, frame)) {
+                hasPlacedPinPad = true;
             }
         }
     }
 
-    private boolean tryPlaceSolarSystem(MotionEvent tap, Frame frame) {
+    private boolean tryPlacePinPad(MotionEvent tap, Frame frame) {
         if (tap != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
             for (HitResult hit : frame.hitTest(tap)) {
                 Trackable trackable = hit.getTrackable();
@@ -339,8 +287,8 @@ public class PinCodeActivity extends AppCompatActivity {
                     Anchor anchor = hit.createAnchor();
                     AnchorNode anchorNode = new AnchorNode(anchor);
                     anchorNode.setParent(arSceneView.getScene());
-                    Node solarSystem = createSolarSystem();
-                    anchorNode.addChild(solarSystem);
+                    Node pinPad = createPinPad();
+                    anchorNode.addChild(pinPad);
                     return true;
                 }
             }
@@ -349,103 +297,27 @@ public class PinCodeActivity extends AppCompatActivity {
         return false;
     }
 
-    private Node createSolarSystem() {
+    //create PinPad
+    private Node createPinPad() {
+        //base
         Node base = new Node();
 
-        Node sun = new Node();
-        sun.setParent(base);
-        sun.setLocalPosition(new Vector3(0.0f, 0.5f, 0.0f));
+        //sun
+        Node buttons = new Node();
+        buttons.setParent(base);
+        buttons.setLocalPosition(new Vector3(0.0f, 0.5f, 0.0f));
 
-        Node sunVisual = new Node();
-        sunVisual.setParent(sun);
-        sunVisual.setRenderable(sunRenderable);
-        sunVisual.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
+        Node pinPadPlacer = new Node();
+        pinPadPlacer.setParent(buttons);
+        pinPadPlacer.setRenderable(pinPadRenderable);
+        pinPadPlacer.setLocalPosition(new Vector3(0.0f, 0.25f, 0.0f));
 
-        Node solarControls = new Node();
-        solarControls.setParent(sun);
-        solarControls.setRenderable(solarControlsRenderable);
-        solarControls.setLocalPosition(new Vector3(0.0f, 0.25f, 0.0f));
 
-        View solarControlsView = solarControlsRenderable.getView();
-        SeekBar orbitSpeedBar = solarControlsView.findViewById(R.id.orbitSpeedBar);
-        orbitSpeedBar.setProgress((int) (solarSettings.getOrbitSpeedMultiplier() * 10.0f));
-        orbitSpeedBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        float ratio = (float) progress / (float) orbitSpeedBar.getMax();
-                        solarSettings.setOrbitSpeedMultiplier(ratio * 10.0f);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {}
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
-                });
-
-        SeekBar rotationSpeedBar = solarControlsView.findViewById(R.id.rotationSpeedBar);
-        rotationSpeedBar.setProgress((int) (solarSettings.getRotationSpeedMultiplier() * 10.0f));
-        rotationSpeedBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        float ratio = (float) progress / (float) rotationSpeedBar.getMax();
-                        solarSettings.setRotationSpeedMultiplier(ratio * 10.0f);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {}
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
-                });
-
-        // Toggle the solar controls on and off by tapping the sun.
-        sunVisual.setOnTapListener(
-                (hitTestResult, motionEvent) -> solarControls.setEnabled(!solarControls.isEnabled()));
-
-        createPlanet("Mercury", sun, 0.4f, 47f, mercuryRenderable, 0.019f);
-
-        createPlanet("Venus", sun, 0.7f, 35f, venusRenderable, 0.0475f);
-
-        Node earth = createPlanet("Earth", sun, 1.0f, 29f, earthRenderable, 0.05f);
-
-        createPlanet("Moon", earth, 0.15f, 100f, lunaRenderable, 0.018f);
-
-        createPlanet("Mars", sun, 1.5f, 24f, marsRenderable, 0.0265f);
-
-        createPlanet("Jupiter", sun, 2.2f, 13f, jupiterRenderable, 0.16f);
-
-        createPlanet("Saturn", sun, 3.5f, 9f, saturnRenderable, 0.1325f);
-
-        createPlanet("Uranus", sun, 5.2f, 7f, uranusRenderable, 0.1f);
-
-        createPlanet("Neptune", sun, 6.1f, 5f, neptuneRenderable, 0.074f);
+//        // Toggle the controls on and off by tapping the andy.
+//        andyPlacer.setOnTapListener(
+//                (hitTestResult, motionEvent) -> pinPadPlacer.setEnabled(!pinPadPlacer.isEnabled()));
 
         return base;
-    }
-
-    private Node createPlanet(
-            String name,
-            Node parent,
-            float auFromParent,
-            float orbitDegreesPerSecond,
-            ModelRenderable renderable,
-            float planetScale) {
-        // Orbit is a rotating node with no renderable positioned at the sun.
-        // The planet is positioned relative to the orbit so that it appears to rotate around the sun.
-        // This is done instead of making the sun rotate so each planet can orbit at its own speed.
-        RotatingNode orbit = new RotatingNode(solarSettings, true);
-        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
-        orbit.setParent(parent);
-
-        // Create the planet and position it relative to the sun.
-        Planet planet = new Planet(this, name, planetScale, renderable, solarSettings);
-        planet.setParent(orbit);
-        planet.setLocalPosition(new Vector3(auFromParent * AU_TO_METERS, 0.0f, 0.0f));
-
-        return planet;
     }
 
     private void showLoadingMessage() {
@@ -455,7 +327,7 @@ public class PinCodeActivity extends AppCompatActivity {
 
         loadingMessageSnackbar =
                 Snackbar.make(
-                        SolarActivity.this.findViewById(android.R.id.content),
+                        PinCodeActivity.this.findViewById(android.R.id.content),
                         R.string.plane_finding,
                         Snackbar.LENGTH_INDEFINITE);
         loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);

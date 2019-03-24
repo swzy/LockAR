@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.ar.sceneform.plugin'
 
+sceneform.asset('sampledata/models/andy.obj', // 'Source Asset Path' specified during import.
+        'default',                    // 'Material Path' specified during import.
+        'sampledata/models/andy.sfa', // '.sfa Output Path' specified during import.
+        'src/main/res/raw/andy')      // '.sfb Output Path' specified during import.
+
 android {
     compileSdkVersion 28
     defaultConfig {
