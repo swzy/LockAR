@@ -25,6 +25,9 @@
   <string name="resolve_button_text">Resolve</string>
   <string name="plane_finding">Please find a suitable surface&#8230;</string>
 
+    <string name="bullet_symbol">\u25CF</string>
+    <string name="pin_message">Welcome to LockAR. You have three tries to get the PIN correct or the owner will be notified.</string>
+
   <!-- Strings in the Resolve Dialog Box -->
   <string name="resolve_dialog_ok">Resolve</string>
   <string name="resolve_dialog_title">Resolve an Anchor</string>

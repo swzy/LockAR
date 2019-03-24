@@ -33,8 +33,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.google.ar.core.examples.java.PinCodeActivity.PinCodeActivity;
-
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;
