@@ -45,6 +45,8 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    
+    <activity android:name="com.google.ar.core.examples.java.PinCodeActivity" />
     <!-- This tag indicates that this application requires ARCore.  This results in the Google Play
          Store downloading and installing ARCore along with the application.
          Application code must still call ArCoreApk.requestInstall() before beginning an ARCore

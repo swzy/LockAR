@@ -60,11 +60,9 @@ public class PinCodeActivity extends AppCompatActivity {
 
     private GestureDetector gestureDetector;
     private Snackbar loadingMessageSnackbar = null;
-    private DemoUtils demoUtils;
 
     private ArSceneView arSceneView;
 
-    private ModelRenderable andyRenderable;
     private ViewRenderable pinPadRenderable;
 
 
@@ -88,16 +86,12 @@ public class PinCodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pin);
         arSceneView = findViewById(R.id.ar_scene_view);
 
-        // Build all the planet models.
-        CompletableFuture<ModelRenderable> placeAndy =
-                ModelRenderable.builder().setSource(this, Uri.parse("Sol.sfb")).build();
         // Build a pinpad renderable from a 2D View.
-        CompletableFuture<ViewRenderable> pinPadRenderable =
+        CompletableFuture<ViewRenderable> placePinPad =
                 ViewRenderable.builder().setView(this, R.layout.pinpad).build();
 
         CompletableFuture.allOf(
-                placeAndy,
-                pinPadRenderable)
+                placePinPad)
                 .handle(
                         (notUsed, throwable) -> {
                             // When you build a Renderable, Sceneform loads its resources in the background while
@@ -110,8 +104,7 @@ public class PinCodeActivity extends AppCompatActivity {
                             }
 
                             try {
-                                andyRenderable = placeAndy.get();
-                                this.pinPadRenderable = pinPadRenderable.get();
+                                pinPadRenderable = placePinPad.get();
 
                                 // Everything finished loading successfully.
                                 hasFinishedLoading = true;
@@ -314,20 +307,15 @@ public class PinCodeActivity extends AppCompatActivity {
         buttons.setParent(base);
         buttons.setLocalPosition(new Vector3(0.0f, 0.5f, 0.0f));
 
-        Node andyPlacer = new Node();
-        andyPlacer.setParent(buttons);
-        andyPlacer.setRenderable(andyRenderable);
-        andyPlacer.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
-
         Node pinPadPlacer = new Node();
         pinPadPlacer.setParent(buttons);
         pinPadPlacer.setRenderable(pinPadRenderable);
         pinPadPlacer.setLocalPosition(new Vector3(0.0f, 0.25f, 0.0f));
 
 
-        // Toggle the solar controls on and off by tapping the sun.
-        andyPlacer.setOnTapListener(
-                (hitTestResult, motionEvent) -> pinPadPlacer.setEnabled(!pinPadPlacer.isEnabled()));
+//        // Toggle the controls on and off by tapping the andy.
+//        andyPlacer.setOnTapListener(
+//                (hitTestResult, motionEvent) -> pinPadPlacer.setEnabled(!pinPadPlacer.isEnabled()));
 
         return base;
     }

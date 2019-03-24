@@ -16,7 +16,7 @@
 -->
 <resources>
   <!-- Strings in the main activity -->
-  <string name="app_name">Cloud Anchor Example</string>
+  <string name="app_name">LockAR</string>
   <string name="cancel">Cancel</string>
   <string name="host_button_text">Host</string>
   <string name="host_dialog_title">Host an Anchor</string>
@@ -26,6 +26,7 @@
   <string name="plane_finding">Please find a suitable surface&#8230;</string>
 
     <string name="bullet_symbol">\u25CF</string>
+    <string name="checkmark">\u2713</string>
     <string name="pin_message">Welcome to LockAR. You have three tries to get the PIN correct or the owner will be notified.</string>
 
   <!-- Strings in the Resolve Dialog Box -->
